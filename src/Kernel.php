@@ -4,6 +4,7 @@ namespace App;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
@@ -19,12 +20,15 @@ class Kernel
      * @param Request $request
      * @return Response
      */
-    public function runApp(Request $request) : Response
+    public function runApp(Request $request): Response
     {
         $parameters = $this->getParameters($this->getRoutes(), $request->getPathInfo());
 
         $controllerFullName = self::CONTROLLER_NAMESPACE . $parameters['controller'] . self::CONTROLLER_POSTFIX;
-        $controller = new $controllerFullName($this->getTwig());
+        $controller = new $controllerFullName(
+            $this->getTwig(),
+            $this->getUrlGenerator()
+        );
 
         $actionName = $parameters['action'] . self::ACTION_POSTFIX;
 
@@ -36,7 +40,7 @@ class Kernel
      * @param string $path
      * @return array
      */
-    private function getParameters(RouteCollection $routes, string $path) : array
+    private function getParameters(RouteCollection $routes, string $path): array
     {
         $context = new RequestContext('/');
         $matcher = new UrlMatcher($routes, $context);
@@ -47,7 +51,7 @@ class Kernel
     /**
      * @return \Twig_Environment
      */
-    private function getTwig() : \Twig_Environment
+    private function getTwig(): \Twig_Environment
     {
         $loader = new \Twig_Loader_Filesystem('../templates');
 
@@ -57,22 +61,22 @@ class Kernel
     /**
      * @return RouteCollection
      */
-    private function getRoutes() : RouteCollection
+    private function getRoutes(): RouteCollection
     {
+        //TODO move to router
+
         $routesParameters = [
             [
                 'name' => 'main-page',
                 'path' => '/',
-                'controller' => 'Articles',
-                'action' => 'getArticles',
-                'method' => 'GET'
+                'controller' => 'Post',
+                'action' => 'getPosts'
             ],
             [
                 'name' => 'add-article',
                 'path' => '/article/add',
-                'controller' => 'Articles',
-                'action' => 'addArticle',
-                'method' => 'POST'
+                'controller' => 'Post',
+                'action' => 'addPost'
             ]
         ];
 
@@ -86,11 +90,18 @@ class Kernel
                 ]
             );
 
-            $route->setMethods([$routeParameters['method']]);
             $routes->add($routeParameters['name'], $route);
         }
 
         return $routes;
+    }
+
+    /**
+     * @return UrlGenerator
+     */
+    private function getUrlGenerator(): UrlGenerator
+    {
+        return new UrlGenerator($this->getRoutes(), new RequestContext(''));
     }
 
 }
