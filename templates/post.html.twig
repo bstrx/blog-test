@@ -4,6 +4,9 @@
     </header>
     <time>{{ post.time }}</time>
     <section class="blog-post-content">
+        {% if post.image %}
+            <img width=300 height=300 src="/uploaded/{{ post.image }}"/>
+        {% endif %}
         <p>
             {{ post.content }}
         </p>
