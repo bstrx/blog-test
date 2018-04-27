@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,6 +18,7 @@ class PostController extends Controller
      */
     public function getPostsAction() : Response
     {
+        //TODO remove
         $postsInfo = [
             [
                 'title' => 'My latest blog post! Sorry, no picture this time!',
@@ -46,11 +47,26 @@ class PostController extends Controller
      */
     public function addPostAction(Request $request) : Response
     {
-        //TODO add validation
-        if ($request->get('email') !== self::USER_EMAIL) {
-            return new Response('TODO BAD EMAIL');
+        $errors = $this->validateAddPost($request);
+        if ($errors) {
+            return $this->getJsonResponse(null, $errors, 422);
         }
 
+        $post = $this->createPostFromRequest($request);
+        $posts = $this->getPosts();
+        $posts[] = $post;
+        $this->putPosts($posts);
+        $this->updateMostUsedWords($posts);
+
+        return $this->getJsonResponse($this->render('post.html.twig', ['post' => $post]));
+    }
+
+    /**
+     * @param Request $request
+     * @return Post
+     */
+    private function createPostFromRequest(Request $request): Post
+    {
         $post = new Post();
         $post->setTime($request->get('time'));
         $post->setTitle($request->get('title'));
@@ -67,12 +83,26 @@ class PostController extends Controller
             }
         }
 
-        $posts = $this->getPosts();
-        $posts[] = $post;
-        $this->putPosts($posts);
-        $this->updateMostUsedWords($posts);
+        return $post;
+    }
 
-        return new Response($this->render('post.html.twig', ['post' => $post]));
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    private function validateAddPost(Request $request): array
+    {
+        $errors = [];
+        if ($request->get('email') !== self::USER_EMAIL) {
+            $errors[] = "Your email doesn't match our secret email";
+        }
+
+        if (false) { //TODO CSRF maybe?
+            $errors[] = "Request can't be trusted";
+        }
+
+        return $errors;
     }
 
     /**
