@@ -1,28 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Vladimir's blog</title>
-    <link rel="stylesheet" type="text/css" href="/assets/index.css">
-    <script src="/assets/jquery-3.3.1.min.js"></script>
-    <script src="/assets/index.js"></script>
-</head>
-<body>
-    <div id="test-app">
-        <header class="blog-header">
-            <h1>My spectacular blog</h1>
-            <h2>A totally true statement</h2>
-        </header>
+{% extends "layout.html.twig" %}
+
+{% block content %}
+<div id="test-app">
+    <header class="blog-header">
+        <h1>My spectacular blog</h1>
+        <h2>A totally true statement</h2>
+    </header>
+
+    <div class="blog-add-post">
+        <div class="errors">
+            <ul>
+                {#container for errors#}
+            </ul>
+        </div>
 
         {% include 'addPost.html.twig' with {'addPostUrl': addPostUrl} %}
-
-        {% include 'usedWords.html.twig' with {'mostUsedWords': mostUsedWords} %}
-
-        <div class="blog-posts">
-            {% for post in posts %}
-                {% include 'post.html.twig' with {'post': post} %}
-            {% endfor %}
-        </div>
     </div>
-</body>
-</html>
+
+    {% include 'usedWords.html.twig' with {'mostUsedWords': mostUsedWords} %}
+
+    <div class="blog-posts">
+        {% for post in posts %}
+            {% include 'post.html.twig' with {'post': post} %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

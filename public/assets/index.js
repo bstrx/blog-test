@@ -7,12 +7,16 @@ window.addEventListener('load', function () {
     function AddPostForm(formClass) {
         let $form = $('.' + formClass);
         let $title = $form.find('input[name="title"]');
-        let $content = $form.find('input[name="content"]');
+        let $content = $form.find('textarea[name="content"]');
         let $image = $form.find('input[name="image"]');
         let $email = $form.find('input[name="email"]');
+        let $submitButton = $form.find('input[type="submit"]');
+        let $loader = $('.loader');
+        let $errorsContainer = $('.errors ul');
 
         $form.submit(function(e) {
             e.preventDefault();
+            clearErrors();
             submit();
         });
 
@@ -20,52 +24,43 @@ window.addEventListener('load', function () {
          * Validates and submits the form
          */
         function submit() {
-            let validationResult = validate();
+            let errors = validate();
 
-            if (validationResult.isValid) {
-                $.post($form.attr('action'), $form.serialize(), handleResponse);
+            if (errors.length === 0) {
+                $loader.show();
+                $submitButton.prop('disabled', true);
+
+                //Imitate long long connection
+                setTimeout(function() {
+                    $.post($form.attr('action'), $form.serialize())
+                        .done(function(response) {
+                            let parsedResponse = JSON.parse(response);
+                            $('.blog-posts').prepend(response.data);
+                        })
+                        .fail(function(xhr) {
+                            let parsedResponse = JSON.parse(xhr.responseJSON);
+
+                            showErrors(parsedResponse.errors);
+                        })
+                        .always(function() {
+                            $loader.hide();
+                            $submitButton.prop('disabled', false);
+                        });
+                }, 2000);
             } else {
-                //TODO
-                validationResult.errorFields.forEach(function (fieldId) {
-                    console.log('error in field: ' + fieldId);
-                    //getFieldInputWithId(fieldId).classList.add("error");
-                });
+                showErrors(errors);
             }
         }
 
-        /**
-         * Handles submit response from server
-         */
-        function handleResponse(response) {
-            response = JSON.parse(response);
+        function showErrors(errors) {
+            clearErrors();
+            errors.forEach(function (error) {
+                $errorsContainer.append($('<li>' + error + '</li>'));
+            });
+        }
 
-            if (response.data) {
-                $('.blog-posts').prepend(response.data);
-            } else if ($response.error) {
-                //TODO show errors
-            }
-
-
-            // switch (response.status) {
-            //     case "success":
-            //         $('.blog-posts').prepend(response.data);
-            //         resultContainer.innerText = "Success";
-            //         resultContainer.classList.add("success");
-            //         submitButton.disabled = false;
-            //         break;
-                // case "error":
-                //     resultContainer.innerText = response.reason;
-                //     resultContainer.classList.add("error");
-                //     submitButton.disabled = false;
-                //     break;
-                // case "progress":
-                //     resultContainer.innerText = '';
-                //     setTimeout(submit, response.timeout);
-                //     break;
-                // default:
-                //     submitButton.disabled = false;
-                //     console.error('Something went wrong');
-            // }
+        function clearErrors() {
+            $errorsContainer.html('');
         }
 
         /**
@@ -74,25 +69,21 @@ window.addEventListener('load', function () {
          * @returns {Object}
          */
         function validate() {
-            let errorFields = [];
+            let errors = [];
 
             if (!$title.val()) {
-                errorFields.push('title');
+                errors.push('Title can\'t be empty');
             }
 
             if (!validateEmail()) {
-                errorFields.push('email')
+                errors.push('Email must look like example@domain.com')
             }
 
             if (!$content.val() && !$image.val()) {
-                errorFields.push('content');
-                errorFields.push('image');
+                errors.push('Either image or content must be specified');
             }
 
-            return  {
-                isValid: errorFields.length === 0,
-                errorFields: errorFields
-            }
+            return errors;
         }
 
         /**

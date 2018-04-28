@@ -1,14 +1,12 @@
-<div class="blog-add-post">
-    <form class="blog-add-post-form" action="{{ addPostUrl }}" method="post" enctype="multipart/form-data">
-        <div class="inputs">
-            <h3>New blog post</h3>
-            <input name="title"><br>
-            <textarea name="content"></textarea><br>
-            <input type="email" name="email"><br>
-            <input type="file" name="image">
-        </div>
-        <div class="submit-button">
-            <input type="submit">
-        </div>
-    </form>
-</div>
+<form class="blog-add-post-form" action="{{ addPostUrl }}" method="post" enctype="multipart/form-data">
+    <div class="inputs">
+        <h3>New blog post <div class="loader"></div></h3>
+        <input name="title"><br>
+        <textarea name="content"></textarea><br>
+        <input name="email"><br>
+        <input type="file" name="image">
+    </div>
+    <div class="submit-button">
+        <input type="submit">
+    </div>
+</form>
