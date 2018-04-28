@@ -1,7 +1,11 @@
+:root {
+    --main-bg-color: beige;
+    --main-border-color: #606c76;
+}
+
 /* Main Grids layout */
 #test-app {
     display: grid;
-    grid-gap: 30px;
 }
 
 @media (min-width: 1025px) {
@@ -25,36 +29,36 @@
 }
 
 #test-app {
+    padding: 20px;
     max-width: 1280px;
     margin: 0 auto;
+    border-left: 2px solid var(--main-border-color);
+    border-right: 2px solid var(--main-border-color);
 }
 
 .blog-used-words, .blog-add-post, .blog-post {
-    background-color: beige;
+    background-color: var(--main-bg-color);
     border-radius: 12px;
     padding: 20px;
 }
 
 .blog-post {
-    margin-top: 15px;
-}
-
-.blog-post:first-child {
-    margin-top: 0;
+    margin-top: 20px;
 }
 
 .blog-header {
     text-align: center;
 }
 
-.blog-add-post form {
-    width: 100%;
+.blog-add-post {
+    margin-top: 30px;
 }
 
 .blog-add-post-form {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
+    width: 100%;
 }
 
 .blog-add-post-form {
@@ -63,6 +67,29 @@
 
 .blog-add-post-form .inputs input, .blog-add-post-form  .inputs textarea {
     margin-bottom: 10px;
+}
+
+/* blog post */
+.blog-post-header {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
+
+.blog-post-header time{
+    flex: 0 0 auto;
+    padding: 3px;
+}
+
+.blog-post-content img {
+    float:left;
+    margin: 0 10px 10px 0
+}
+
+.blog-post:after {
+    content: '';
+    display: block;
+    clear: both;
 }
 
 .inputs {
@@ -75,8 +102,62 @@
     }
 
     .submit-button {
-        margin: 0 50px;
+        margin-left: 50px;
     }
+
+    .submit-button input {
+        width: 200px;
+    }
+}
+
+
+/* Most used words block */
+.blog-used-words {
+    display: flex;
+    flex-flow: row wrap;
+    margin: 20px 0 0 20px;
+}
+
+.blog-used-words li {
+    text-transform: capitalize;
+}
+
+.blog-used-words h3 {
+    flex: 1 100%;
+}
+
+@media (max-width: 1024px) {
+    .blog-used-words {
+        flex-flow: row nowrap;
+        align-items: center;
+        padding: 0;
+        background: none;
+    }
+
+    .blog-used-words ul, .blog-used-words li {
+        display: inline;
+        font-size: 16px;
+        margin: 0;
+    }
+
+    .blog-used-words h3 {
+        flex: none;
+        margin: 0 10px 0 0;
+        font-size: 18px;
+    }
+
+    .blog-used-words li:after {
+        content: ',';
+    }
+
+    .blog-used-words li:last-child:after {
+        content: '';
+    }
+}
+
+/* stuff */
+.errors li {
+    color: red;
 }
 
 .loader {
@@ -95,4 +176,3 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-

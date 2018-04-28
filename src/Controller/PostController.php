@@ -20,13 +20,11 @@ class PostController extends Controller
         $postsInfo = [
             [
                 'title' => 'My latest blog post! Sorry, no picture this time!',
-                'time' => '01/11/2011',
                 'content' => 'Today awesome stuff happened to me, I\'ll tell you guys all about it! It\'s going to be an amazing story,
                     I can\'t wait to tell you, but since this is a fake site you\'ll never know!'
             ],
             [
                 'title' => '2 My latest blog post! Sorry, no picture this time!',
-                'time' => '01/11/2011',
                 'content' => 'Today awesome stuff happened to me, I\'ll tell you guys all about it! It\'s going to be an amazing story,
                     I can\'t wait to tell you, but since this is a fake site you\'ll never know!'
             ]
@@ -107,13 +105,8 @@ class PostController extends Controller
     private function getPosts()
     {
         $serializedPosts = file_get_contents($this->getFilePath('posts.txt'));
-        if ($serializedPosts) {
-            $posts = array_reverse(unserialize($serializedPosts));
-        } else {
-            $posts = [];
-        }
 
-        return $posts;
+        return $serializedPosts ? array_reverse(unserialize($serializedPosts)) : [];
     }
 
     /**

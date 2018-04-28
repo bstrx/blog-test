@@ -34,16 +34,6 @@ abstract class Controller
     }
 
     /**
-     * @param string $templateName
-     * @param array $params
-     * @return string
-     */
-    protected function render(string $templateName, array $params = []): string
-    {
-        return $this->twig->load($templateName)->render($params);
-    }
-
-    /**
      * @param string $routeName
      * @param array $params
      * @return string
@@ -109,5 +99,16 @@ abstract class Controller
         $file->move($this->getImageDir(), $imageName);
 
         return $imageName;
+    }
+
+    /**
+     * @param string $templateName
+     * @param array $params
+     * @return string
+     */
+    protected function render(string $templateName, array $params = []): string
+    {
+        //no exceptions handling for now
+        return $this->twig->load($templateName)->render($params);
     }
 }

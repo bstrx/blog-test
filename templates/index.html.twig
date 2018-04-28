@@ -8,16 +8,17 @@
     </header>
 
     <div class="blog-add-post">
-        <div class="errors">
-            <ul>
-                {#container for errors#}
-            </ul>
-        </div>
-
-        {% include 'addPost.html.twig' with {'addPostUrl': addPostUrl} %}
+        {% include 'addPostBlock.html.twig' with {'addPostUrl': addPostUrl} %}
     </div>
 
-    {% include 'usedWords.html.twig' with {'mostUsedWords': mostUsedWords} %}
+    <aside class="blog-used-words">
+        <h3>Most used words here:</h3>
+        <ul>
+            {% for word in mostUsedWords %}
+                <li>{{ word }}</li>
+            {% endfor %}
+        </ul>
+    </aside>
 
     <div class="blog-posts">
         {% for post in posts %}

@@ -1,0 +1,19 @@
+<h3 class="blog-add-post-form-header">
+    New blog post <span class="loader" style="display: none;"></span>
+</h3>
+
+<div class="errors">
+    <ul>{#container for errors#}</ul>
+</div>
+
+<form class="blog-add-post-form" id="test-form" action="{{ addPostUrl }}" method="post" enctype="multipart/form-data">
+    <div class="inputs">
+        <input name="title" placeholder="My post title"><br>
+        <textarea name="content" placeholder="My post content"></textarea><br>
+        <input name="email" placeholder="Email Address"><br>
+        <input type="file" name="image">
+    </div>
+    <div class="submit-button">
+        <input type="submit" value="Save post">
+    </div>
+</form>
