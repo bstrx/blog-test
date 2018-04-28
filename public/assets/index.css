@@ -1,7 +1,7 @@
 /* Main Grids layout */
 #test-app {
     display: grid;
-    grid-gap: 1em;
+    grid-gap: 30px;
 }
 
 @media (min-width: 1025px) {
@@ -20,29 +20,31 @@
     .blog-used-words {
         grid-column: 2/3;
         grid-row: 3/4;
+        height: fit-content;
     }
 }
 
 #test-app {
-    width: 1280px;
+    max-width: 1280px;
     margin: 0 auto;
-
 }
 
-#test-app > * {
+.blog-used-words, .blog-add-post, .blog-post {
     background-color: beige;
-    border: 1px solid black;
     border-radius: 12px;
-    padding: 10px;
+    padding: 20px;
+}
+
+.blog-post {
+    margin-top: 15px;
+}
+
+.blog-post:first-child {
+    margin-top: 0;
 }
 
 .blog-header {
     text-align: center;
-}
-
-/*TODO!*/
-.blog-add-post {
-    width: 100%;
 }
 
 .blog-add-post form {
@@ -52,14 +54,15 @@
 .blog-add-post-form {
     display: flex;
     flex-flow: row wrap;
+    justify-content: space-between;
 }
 
-.blog-add-post-form > * {
-    background-color: aquamarine;
+.blog-add-post-form {
+    font-size: 18px;
 }
 
-.inputs input, .inputs textarea {
-    width: 100%;
+.blog-add-post-form .inputs input, .blog-add-post-form  .inputs textarea {
+    margin-bottom: 10px;
 }
 
 .inputs {
@@ -67,12 +70,17 @@
 }
 
 @media (min-width: 1025px) {
-    .inputs {
-        width: 70%;
+    .blog-add-post-form {
+        flex-flow: row nowrap;
+    }
+
+    .submit-button {
+        margin: 0 50px;
     }
 }
 
 .loader {
+    display: inline-block;
     border-top: 5px solid blue;
     border-right: 5px solid green;
     border-bottom: 5px solid red;

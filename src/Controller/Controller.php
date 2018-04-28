@@ -2,12 +2,17 @@
 
 namespace App\Controller;
 
+use Gumlet\ImageResize;
+use Gumlet\ImageResizeException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Twig_Environment;
 
 abstract class Controller
 {
+    const IMAGE_EXTENSIONS_WHITELIST = ['jpg', 'jpeg', 'png'];
+
     /**
      * @var Twig_Environment
      */
@@ -62,5 +67,47 @@ abstract class Controller
         ];
 
         return new JsonResponse(json_encode($content), $status);
+    }
+
+    /**
+     * @param string $fileName
+     * @return string
+     */
+    protected function getFilePath(string $fileName): string
+    {
+        return $_SERVER['DOCUMENT_ROOT'] . "fileStorage/" . $fileName;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getImageDir(): string
+    {
+        return $_SERVER['DOCUMENT_ROOT'] . "public/uploaded/";
+    }
+
+    /**
+     * @param UploadedFile $file
+     * @return bool|string
+     */
+    protected function saveFile(UploadedFile $file)
+    {
+        $extension = $file->guessExtension();
+        if (!in_array($extension, self::IMAGE_EXTENSIONS_WHITELIST)) {
+            return false;
+        }
+
+        $imageResize = new ImageResize($file->getPathname());
+        $imageResize->resize(300, 300, true);
+        try {
+            $imageResize->save($file->getPathname());
+        } catch (ImageResizeException $e) {
+            return false;
+        }
+
+        $imageName = uniqid() . '.' . $extension;
+        $file->move($this->getImageDir(), $imageName);
+
+        return $imageName;
     }
 }

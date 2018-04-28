@@ -3,16 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Post;
-use Gumlet\ImageResize;
-use Gumlet\ImageResizeException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class PostController extends Controller
 {
-    const IMAGE_EXTENSIONS_WHITELIST = ['jpg', 'jpeg', 'png'];
     const USER_EMAIL = 'vladimir.prudilin@opensoftdev.ru';
 
     /**
@@ -84,31 +80,6 @@ class PostController extends Controller
         }
 
         return $post;
-    }
-
-    /**
-     * @param UploadedFile $file
-     * @return bool|string
-     */
-    private function saveFile(UploadedFile $file)
-    {
-        $extension = $file->guessExtension();
-        if (!in_array($extension, self::IMAGE_EXTENSIONS_WHITELIST)) {
-            return false;
-        }
-
-        $imageResize = new ImageResize($file->getPathname());
-        $imageResize->resize(300, 300, true);
-        try {
-            $imageResize->save($file->getPathname());
-        } catch (ImageResizeException $e) {
-            return false;
-        }
-
-        $imageName = uniqid() . '.' . $extension;
-        $file->move($this->getImageDir(), $imageName);
-
-        return $imageName;
     }
 
 
@@ -193,22 +164,5 @@ class PostController extends Controller
         $mostUsedWords = $this->countMostUsedWords($posts);
 
         return file_put_contents($this->getFilePath('mostUsedWords.txt'), serialize($mostUsedWords));
-    }
-
-    /**
-     * @param string $fileName
-     * @return string
-     */
-    private function getFilePath(string $fileName): string
-    {
-        return $_SERVER['DOCUMENT_ROOT'] . "fileStorage/" . $fileName;
-    }
-
-    /**
-     * @return string
-     */
-    private function getImageDir(): string
-    {
-        return $_SERVER['DOCUMENT_ROOT'] . "public/uploaded/";
     }
 }
