@@ -4,11 +4,12 @@ namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGenerator;
+use Twig_Environment;
 
 abstract class Controller
 {
     /**
-     * @var \Twig_Environment
+     * @var Twig_Environment
      */
     private $twig;
 
@@ -18,9 +19,10 @@ abstract class Controller
     private $urlGenerator;
 
     /**
-     * @param \Twig_Environment $twig
+     * @param Twig_Environment $twig
+     * @param UrlGenerator $urlGenerator
      */
-    public function __construct(\Twig_Environment $twig, UrlGenerator $urlGenerator)
+    public function __construct(Twig_Environment $twig, UrlGenerator $urlGenerator)
     {
         $this->twig = $twig;
         $this->urlGenerator = $urlGenerator;
@@ -46,7 +48,13 @@ abstract class Controller
         return $this->urlGenerator->generate($routeName, $params);
     }
 
-    protected function getJsonResponse($data = null, array $errors = [], $status = 200)
+    /**
+     * @param mixed|null $data
+     * @param array $errors
+     * @param int $status
+     * @return JsonResponse
+     */
+    protected function getJsonResponse($data = null, array $errors = [], $status = 200): JsonResponse
     {
         $content = [
             'data' => $data,

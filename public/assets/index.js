@@ -32,20 +32,23 @@ window.addEventListener('load', function () {
 
                 //Imitate long long connection
                 setTimeout(function() {
-                    $.post($form.attr('action'), $form.serialize())
-                        .done(function(response) {
-                            let parsedResponse = JSON.parse(response);
-                            $('.blog-posts').prepend(response.data);
-                        })
-                        .fail(function(xhr) {
-                            let parsedResponse = JSON.parse(xhr.responseJSON);
+                    let formData = new FormData($form[0]);
 
+                    fetch($form.attr('action'), {
+                        method: "POST",
+                        body: formData
+                    }).then((response) => response.json())
+                    .then(function(response) {
+                        let parsedResponse = JSON.parse(response);
+                        if (parsedResponse.data) {
+                            $('.blog-posts').prepend(parsedResponse.data);
+                        } else if (parsedResponse.errors) {
                             showErrors(parsedResponse.errors);
-                        })
-                        .always(function() {
-                            $loader.hide();
-                            $submitButton.prop('disabled', false);
-                        });
+                        }
+
+                        $loader.hide();
+                        $submitButton.prop('disabled', false);
+                    });
                 }, 2000);
             } else {
                 showErrors(errors);

@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use Gumlet\ImageResize;
+use Gumlet\ImageResizeException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,13 +12,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PostController extends Controller
 {
-    const IMAGE_EXTENSIONS_WHITELIST = ['jpg', 'png'];
+    const IMAGE_EXTENSIONS_WHITELIST = ['jpg', 'jpeg', 'png'];
     const USER_EMAIL = 'vladimir.prudilin@opensoftdev.ru';
 
     /**
      * @return Response
      */
-    public function getPostsAction() : Response
+    public function getPostsAction(): Response
     {
         //TODO remove
         $postsInfo = [
@@ -45,7 +47,7 @@ class PostController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function addPostAction(Request $request) : Response
+    public function addPostAction(Request $request): Response
     {
         $errors = $this->validateAddPost($request);
         if ($errors) {
@@ -68,22 +70,45 @@ class PostController extends Controller
     private function createPostFromRequest(Request $request): Post
     {
         $post = new Post();
-        $post->setTime($request->get('time'));
+        $post->setTime(new \DateTime());
         $post->setTitle($request->get('title'));
         $post->setContent($request->get('content'));
 
         /** @var UploadedFile $file */
         $file = $request->files->get('image');
         if ($file) {
-            $extension = $file->guessExtension();
-            if (in_array($extension, self::IMAGE_EXTENSIONS_WHITELIST)) {
-                $imageName = uniqid() . '.' . $extension;
-                $file->move($this->getImageDir(), $imageName);
-                $post->setImage($imageName);
+            $savedFileName = $this->saveFile($file);
+            if ($savedFileName) {
+                $post->setImage($savedFileName);
             }
         }
 
         return $post;
+    }
+
+    /**
+     * @param UploadedFile $file
+     * @return bool|string
+     */
+    private function saveFile(UploadedFile $file)
+    {
+        $extension = $file->guessExtension();
+        if (!in_array($extension, self::IMAGE_EXTENSIONS_WHITELIST)) {
+            return false;
+        }
+
+        $imageResize = new ImageResize($file->getPathname());
+        $imageResize->resize(300, 300, true);
+        try {
+            $imageResize->save($file->getPathname());
+        } catch (ImageResizeException $e) {
+            return false;
+        }
+
+        $imageName = uniqid() . '.' . $extension;
+        $file->move($this->getImageDir(), $imageName);
+
+        return $imageName;
     }
 
 

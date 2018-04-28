@@ -3,7 +3,8 @@
         "php": "^7.1",
         "twig/twig": "^2.0",
         "symfony/routing": "^4.0",
-        "symfony/http-foundation": "^4.0"
+        "symfony/http-foundation": "^4.0",
+        "gumlet/php-image-resize": "^1.8"
     },
     "autoload": {
         "psr-4": {

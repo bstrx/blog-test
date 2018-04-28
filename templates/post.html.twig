@@ -2,7 +2,7 @@
     <header>
         <h4>{{ post.title }}</h4>
     </header>
-    <time>{{ post.time }}</time>
+    <time>{{ post.time|date('Y-m-d') }}</time>
     <section class="blog-post-content">
         {% if post.image %}
             <img width=300 height=300 src="/uploaded/{{ post.image }}"/>

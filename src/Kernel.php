@@ -9,6 +9,8 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Twig_Environment;
+use Twig_Loader_Filesystem;
 
 class Kernel
 {
@@ -22,15 +24,15 @@ class Kernel
      */
     public function runApp(Request $request): Response
     {
-        $parameters = $this->getParameters($this->getRoutes(), $request->getPathInfo());
+        $routeParams = $this->getParameters($this->getRoutes(), $request->getPathInfo());
 
-        $controllerFullName = self::CONTROLLER_NAMESPACE . $parameters['controller'] . self::CONTROLLER_POSTFIX;
+        $controllerFullName = self::CONTROLLER_NAMESPACE . $routeParams['controller'] . self::CONTROLLER_POSTFIX;
         $controller = new $controllerFullName(
             $this->getTwig(),
             $this->getUrlGenerator()
         );
 
-        $actionName = $parameters['action'] . self::ACTION_POSTFIX;
+        $actionName = $routeParams['action'] . self::ACTION_POSTFIX;
 
         return $controller->$actionName($request);
     }
@@ -49,13 +51,13 @@ class Kernel
     }
 
     /**
-     * @return \Twig_Environment
+     * @return Twig_Environment
      */
-    private function getTwig(): \Twig_Environment
+    private function getTwig(): Twig_Environment
     {
-        $loader = new \Twig_Loader_Filesystem('../templates');
+        $loader = new Twig_Loader_Filesystem('../templates');
 
-        return $twig = new \Twig_Environment($loader);
+        return $twig = new Twig_Environment($loader);
     }
 
     /**
@@ -103,5 +105,4 @@ class Kernel
     {
         return new UrlGenerator($this->getRoutes(), new RequestContext(''));
     }
-
 }
