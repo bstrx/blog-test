@@ -19,6 +19,8 @@ class Kernel
     private const ACTION_POSTFIX = 'Action';
 
     /**
+     * Turn request into response by calling an action of a controller
+     *
      * @param Request $request
      * @return Response
      */
@@ -38,6 +40,8 @@ class Kernel
     }
 
     /**
+     * Return a route with all info depending on a requested url
+     *
      * @param RouteCollection $routes
      * @param string $path
      * @return array
@@ -51,6 +55,8 @@ class Kernel
     }
 
     /**
+     * Return Twig template engine
+     *
      * @return Twig_Environment
      */
     private function getTwig(): Twig_Environment
@@ -61,12 +67,13 @@ class Kernel
     }
 
     /**
+     * Return collection of routes.
+     * TODO Move to router and configs
+     *
      * @return RouteCollection
      */
     private function getRoutes(): RouteCollection
     {
-        //TODO move to router
-
         $routesParameters = [
             [
                 'name' => 'main-page',

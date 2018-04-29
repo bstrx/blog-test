@@ -9,28 +9,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PostController extends Controller
 {
-    const USER_EMAIL = 'vladimir.prudilin@opensoftdev.ru';
+    private const USER_EMAIL = 'vladimir.prudilin@opensoftdev.ru';
+    private const MOST_USED_WORDS_COUNT = 5;
 
     /**
+     * Render main page
+     *
      * @return Response
      */
     public function getPostsAction(): Response
     {
-        //TODO remove
-        $postsInfo = [
-            [
-                'title' => 'My latest blog post! Sorry, no picture this time!',
-                'content' => 'Today awesome stuff happened to me, I\'ll tell you guys all about it! It\'s going to be an amazing story,
-                    I can\'t wait to tell you, but since this is a fake site you\'ll never know!'
-            ],
-            [
-                'title' => '2 My latest blog post! Sorry, no picture this time!',
-                'content' => 'Today awesome stuff happened to me, I\'ll tell you guys all about it! It\'s going to be an amazing story,
-                    I can\'t wait to tell you, but since this is a fake site you\'ll never know!'
-            ]
-        ];
-
-        return new Response($this->render('index.html.twig', [
+        return new Response($this->render('blog.html.twig', [
             'posts' => $this->getPosts(),
             'mostUsedWords' => $this->getMostUsedWords(),
             'addPostUrl' => $this->generateUrl('add-article')
@@ -38,6 +27,8 @@ class PostController extends Controller
     }
 
     /**
+     * Add post and return it with used words block
+     *
      * @param Request $request
      * @return Response
      */
@@ -61,6 +52,9 @@ class PostController extends Controller
     }
 
     /**
+     * Create post with uploaded file and other data.
+     * It is not good that we create file for a not saved post
+     *
      * @param Request $request
      * @return Post
      */
@@ -83,7 +77,6 @@ class PostController extends Controller
         return $post;
     }
 
-
     /**
      * @param Request $request
      * @return array
@@ -95,24 +88,31 @@ class PostController extends Controller
             $errors[] = "Your email doesn't match our secret email";
         }
 
-        if (false) { //TODO CSRF maybe?
-            $errors[] = "Request can't be trusted";
-        }
-
         return $errors;
     }
 
     /**
      * @return Post[]
      */
-    private function getPosts()
+    private function getPosts(): array
     {
         $serializedPosts = file_get_contents($this->getFilePath('posts.txt'));
+        $posts = unserialize($serializedPosts);
 
-        return $serializedPosts ? array_reverse(unserialize($serializedPosts)) : [];
+        if (!$posts) {
+            return [];
+        }
+
+        usort($posts, function(Post $a, Post $b) {
+            return $b->getTime() <=> $a->getTime();
+        });
+
+        return $posts;
     }
 
     /**
+     * Save posts to file
+     *
      * @param Post[] $posts
      * @return bool|int
      */
@@ -122,7 +122,9 @@ class PostController extends Controller
     }
 
     /**
-     * @return string[]
+     * Return most used words from the file
+     *
+     * @return string[]|mixed
      */
     private function getMostUsedWords()
     {
@@ -130,10 +132,12 @@ class PostController extends Controller
     }
 
     /**
+     * Count most used words
+     *
      * @param Post[] $posts
      * @return array
      */
-    private function countMostUsedWords(array $posts)
+    private function findMostUsedWords(array $posts): array
     {
         $allContent = array_reduce($posts, function ($carry, Post $post) {
             $carry .= ' ' . $post->getContent();
@@ -142,22 +146,26 @@ class PostController extends Controller
         });
 
         $words = array_count_values(str_word_count(strtolower($allContent), 1));
-        arsort($words);
 
         $words = array_filter($words, function ($word) {
             return strlen($word) > 4;
         }, ARRAY_FILTER_USE_KEY);
 
-        return array_slice(array_keys($words), 0, 5);
+        //first sort words by entry count desc, then by name asc to guarantee an order
+        array_multisort(array_values($words), SORT_DESC, array_keys($words), SORT_ASC, $words);
+
+        return array_slice(array_keys($words), 0, self::MOST_USED_WORDS_COUNT);
     }
 
     /**
+     * Find most used words and save result to the file
+     *
      * @param Post[] $posts
      * @return bool|int
      */
     private function updateMostUsedWords(array $posts)
     {
-        $mostUsedWords = $this->countMostUsedWords($posts);
+        $mostUsedWords = $this->findMostUsedWords($posts);
 
         return file_put_contents($this->getFilePath('mostUsedWords.txt'), serialize($mostUsedWords));
     }

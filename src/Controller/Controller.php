@@ -11,7 +11,7 @@ use Twig_Environment;
 
 abstract class Controller
 {
-    const IMAGE_EXTENSIONS_WHITELIST = ['jpg', 'jpeg', 'png'];
+    private const IMAGE_EXTENSIONS_WHITELIST = ['jpg', 'jpeg', 'png'];
 
     /**
      * @var Twig_Environment
@@ -60,6 +60,8 @@ abstract class Controller
     }
 
     /**
+     * Return storage for files with posts and other app's data
+     *
      * @param string $fileName
      * @return string
      */
@@ -69,6 +71,8 @@ abstract class Controller
     }
 
     /**
+     * Return dir for uploaded images
+     *
      * @return string
      */
     protected function getImageDir(): string
@@ -77,6 +81,8 @@ abstract class Controller
     }
 
     /**
+     * Resize upload file and saves it locally
+     *
      * @param UploadedFile $file
      * @return bool|string
      */
