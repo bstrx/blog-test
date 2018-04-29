@@ -10,8 +10,18 @@
     <div class="inputs">
         <input name="title" placeholder="My post title"><br>
         <textarea name="content" placeholder="My post content"></textarea><br>
-        <input name="email" placeholder="Email Address"><br>
-        <input type="file" name="image">
+        <input name="email" class="email" placeholder="Email Address"><br>
+
+        <div class="file-upload-block">
+            <div class="file-path-block">
+                <span class="file-path"></span>
+                <a class="remove-image" style="display: none">(X remove image)</a>
+            </div>
+            <label class="file-label button button-outline">
+                Upload image
+                <input type="file" name="image">
+            </label>
+        </div>
     </div>
     <div class="submit-button">
         <input type="submit" value="Save post">

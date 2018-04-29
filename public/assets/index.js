@@ -11,8 +11,28 @@ window.addEventListener('load', function () {
         let $image = $form.find('input[name="image"]');
         let $email = $form.find('input[name="email"]');
         let $submitButton = $form.find('input[type="submit"]');
+        let $fileUpload = $form.find('input[type="file"]');
+        let $removeImage = $form.find('.remove-image');
+        let $filePath = $form.find('.file-path');
         let $loader = $('.loader');
         let $errorsContainer = $('.errors ul');
+
+        $fileUpload.change(function(e) {
+            if (e.target.files[0]) {
+                $removeImage.show();
+                $filePath.text(e.target.files[0].name)
+            } else {
+                $removeImage.hide();
+                $filePath.text('')
+
+            }
+        });
+
+        $removeImage.click(function(e) {
+                e.preventDefault();
+                removeImage();
+            }
+        );
 
         $form.submit(function(e) {
             e.preventDefault();
@@ -40,8 +60,10 @@ window.addEventListener('load', function () {
                     }).then((response) => response.json())
                     .then(function(response) {
                         let parsedResponse = JSON.parse(response);
+
                         if (parsedResponse.data) {
                             $('.blog-posts').prepend(parsedResponse.data);
+                            clearForm();
                         } else if (parsedResponse.errors) {
                             showErrors(parsedResponse.errors);
                         }
@@ -53,6 +75,17 @@ window.addEventListener('load', function () {
             } else {
                 showErrors(errors);
             }
+        }
+
+        function removeImage() {
+            $removeImage.hide();
+            $fileUpload.val('');
+            $filePath.text('');
+        }
+
+        function clearForm() {
+            removeImage();
+            $form.trigger('reset');
         }
 
         function showErrors(errors) {
