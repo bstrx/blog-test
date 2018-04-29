@@ -1,0 +1,8 @@
+<h3>Most used words here:</h3>
+<ul>
+    {% for word in mostUsedWords %}
+        <li>{{ word }}</li>
+    {% else %}
+        <li>Add posts to see most used words</li>
+    {% endfor %}
+</ul>

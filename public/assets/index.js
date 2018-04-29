@@ -14,6 +14,7 @@ window.addEventListener('load', function () {
         let $fileUpload = $form.find('input[type="file"]');
         let $removeImage = $form.find('.remove-image');
         let $filePath = $form.find('.file-path');
+        let $usedWordsBlock = $('.blog-used-words');
         let $loader = $('.loader');
         let $errorsContainer = $('.errors ul');
 
@@ -24,7 +25,6 @@ window.addEventListener('load', function () {
             } else {
                 $removeImage.hide();
                 $filePath.text('')
-
             }
         });
 
@@ -62,7 +62,15 @@ window.addEventListener('load', function () {
                         let parsedResponse = JSON.parse(response);
 
                         if (parsedResponse.data) {
-                            $('.blog-posts').prepend(parsedResponse.data);
+                            if (parsedResponse.data.post) {
+                                $('.blog-posts').prepend(parsedResponse.data.post);
+                            }
+
+                            console.log(parsedResponse.data);
+                            if (parsedResponse.data.usedWords) {
+                                $usedWordsBlock.html(parsedResponse.data.usedWords);
+                            }
+
                             clearForm();
                         } else if (parsedResponse.errors) {
                             showErrors(parsedResponse.errors);

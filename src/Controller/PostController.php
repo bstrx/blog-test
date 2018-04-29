@@ -54,7 +54,10 @@ class PostController extends Controller
         $this->putPosts($posts);
         $this->updateMostUsedWords($posts);
 
-        return $this->getJsonResponse($this->render('post.html.twig', ['post' => $post]));
+        return $this->getJsonResponse([
+            'post' => $this->render('post.html.twig', ['post' => $post]),
+            'usedWords' => $this->render('mostUsedWordsBlock.html.twig', ['mostUsedWords' => $this->getMostUsedWords()])
+        ]);
     }
 
     /**

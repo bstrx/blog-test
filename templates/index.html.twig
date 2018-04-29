@@ -12,12 +12,7 @@
     </div>
 
     <aside class="blog-used-words">
-        <h3>Most used words here:</h3>
-        <ul>
-            {% for word in mostUsedWords %}
-                <li>{{ word }}</li>
-            {% endfor %}
-        </ul>
+        {% include 'mostUsedWordsBlock.html.twig' with {'mostUsedWords': mostUsedWords} %}
     </aside>
 
     <div class="blog-posts">
