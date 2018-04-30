@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PostController extends Controller
 {
-    private const USER_EMAIL = 'vladimir.prudilin@opensoftdev.ru';
+    private const USER_EMAIL = 'bstrxx@gmail.com';
     private const MOST_USED_WORDS_COUNT = 5;
 
     /**

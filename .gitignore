@@ -1,5 +1,2 @@
 /vendor/
-/var/
-/public/uploaded/
-/fileStorage/mostUsedWords.txt
-/fileStorage/posts.txt
+composer.phar
