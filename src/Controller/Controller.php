@@ -11,6 +11,9 @@ use Twig_Environment;
 
 abstract class Controller
 {
+    /**
+     * TODO: move to config
+     */
     private const IMAGE_EXTENSIONS_WHITELIST = ['jpg', 'jpeg', 'png'];
 
     /**

@@ -139,18 +139,18 @@ body {
     margin-top: 20px;
 }
 
-.blog-post-header {
+.blog-post .header {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
 }
 
-.blog-post-header time{
+.blog-post time{
     flex: 0 0 auto;
     padding: 3px;
 }
 
-.blog-post-content img {
+.blog-post img {
     float:left;
     margin: 0 10px 10px 0
 }

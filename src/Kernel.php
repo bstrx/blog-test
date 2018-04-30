@@ -15,7 +15,9 @@ use Twig_Loader_Filesystem;
 class Kernel
 {
     private const CONTROLLER_NAMESPACE = '\App\Controller\\';
+
     private const CONTROLLER_POSTFIX = 'Controller';
+
     private const ACTION_POSTFIX = 'Action';
 
     /**
@@ -38,6 +40,7 @@ class Kernel
 
         return $controller->$actionName($request);
     }
+
 
     /**
      * Return a route with all info depending on a requested url
@@ -68,7 +71,7 @@ class Kernel
 
     /**
      * Return collection of routes.
-     * TODO Move to router and configs
+     * TODO Move to a router and configs
      *
      * @return RouteCollection
      */

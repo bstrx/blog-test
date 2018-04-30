@@ -9,7 +9,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PostController extends Controller
 {
+    /**
+     * TODO: Move these to some config
+     */
     private const USER_EMAIL = 'bstrxx@gmail.com';
+
     private const MOST_USED_WORDS_COUNT = 5;
 
     /**
@@ -88,6 +92,8 @@ class PostController extends Controller
             $errors[] = "Your email doesn't match our secret email";
         }
 
+        //TODO: add CSRF?
+
         return $errors;
     }
 
@@ -108,27 +114,6 @@ class PostController extends Controller
         });
 
         return $posts;
-    }
-
-    /**
-     * Save posts to file
-     *
-     * @param Post[] $posts
-     * @return bool|int
-     */
-    private function putPosts(array $posts)
-    {
-        return file_put_contents($this->getFilePath('posts.txt'), serialize($posts));
-    }
-
-    /**
-     * Return most used words from the file
-     *
-     * @return string[]|mixed
-     */
-    private function getMostUsedWords()
-    {
-        return unserialize(file_get_contents($this->getFilePath('mostUsedWords.txt')));
     }
 
     /**
@@ -168,5 +153,26 @@ class PostController extends Controller
         $mostUsedWords = $this->findMostUsedWords($posts);
 
         return file_put_contents($this->getFilePath('mostUsedWords.txt'), serialize($mostUsedWords));
+    }
+
+    /**
+     * Save posts to file
+     *
+     * @param Post[] $posts
+     * @return bool|int
+     */
+    private function putPosts(array $posts)
+    {
+        return file_put_contents($this->getFilePath('posts.txt'), serialize($posts));
+    }
+
+    /**
+     * Return most used words from the file
+     *
+     * @return string[]|mixed
+     */
+    private function getMostUsedWords()
+    {
+        return unserialize(file_get_contents($this->getFilePath('mostUsedWords.txt')));
     }
 }

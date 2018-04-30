@@ -37,7 +37,7 @@ window.addEventListener('load', function () {
 
             $removeImage.click(function(e) {
                     e.preventDefault();
-                    removeImage();
+                    removeUploadedImage();
                 }
             );
 
