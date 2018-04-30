@@ -9,6 +9,3 @@ sudo cp install/blog_test_vhost.conf /etc/apache2/sites-available/blog_test_vhos
 sudo sed -e "s?%BLOG_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/blog_test_vhost.conf
 sudo a2ensite blog_test_vhost.conf
 sudo service apache2 restart
-
-sudo curl -s http://getcomposer.org/installer | php
-sudo composer.phar install

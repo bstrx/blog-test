@@ -1,11 +1,10 @@
 window.addEventListener('load', function () {
     /**
-     * @param {string} formClass
-     * @param formClass
      * @constructor
      */
-    function AddPostForm(formClass) {
-        let $form = $('.' + formClass);
+    function PostsPage() {
+        let $form = $('.blog-add-post-form');
+
         let $title = $form.find('input[name="title"]');
         let $content = $form.find('textarea[name="content"]');
         let $image = $form.find('input[name="image"]');
@@ -14,31 +13,40 @@ window.addEventListener('load', function () {
         let $fileUpload = $form.find('input[type="file"]');
         let $removeImage = $form.find('.remove-image');
         let $filePath = $form.find('.file-path');
+
         let $usedWordsBlock = $('.blog-used-words');
+        let $blogPostsBlock = $('.blog-posts');
         let $loader = $('.loader');
         let $errorsContainer = $('.errors ul');
 
-        $fileUpload.change(function(e) {
-            if (e.target.files[0]) {
-                $removeImage.show();
-                $filePath.text(e.target.files[0].name)
-            } else {
-                $removeImage.hide();
-                $filePath.text('')
-            }
-        });
+        addEventHandlers();
 
-        $removeImage.click(function(e) {
+        /**
+         * Add events and handlers
+         */
+        function addEventHandlers() {
+            $fileUpload.change(function(e) {
+                if (e.target.files[0]) {
+                    $removeImage.show();
+                    $filePath.text(e.target.files[0].name)
+                } else {
+                    $removeImage.hide();
+                    $filePath.text('')
+                }
+            });
+
+            $removeImage.click(function(e) {
+                    e.preventDefault();
+                    removeImage();
+                }
+            );
+
+            $form.submit(function(e) {
                 e.preventDefault();
-                removeImage();
-            }
-        );
-
-        $form.submit(function(e) {
-            e.preventDefault();
-            clearErrors();
-            submit();
-        });
+                clearErrors();
+                submit();
+            });
+        }
 
         /**
          * Validates and submits the form
@@ -59,25 +67,7 @@ window.addEventListener('load', function () {
                         body: formData
                     }).then((response) => response.json())
                     .then(function(response) {
-                        let parsedResponse = JSON.parse(response);
-
-                        if (parsedResponse.data) {
-                            if (parsedResponse.data.post) {
-                                $('.blog-posts').prepend(parsedResponse.data.post);
-                            }
-
-                            console.log(parsedResponse.data);
-                            if (parsedResponse.data.usedWords) {
-                                $usedWordsBlock.html(parsedResponse.data.usedWords);
-                            }
-
-                            clearForm();
-                        } else if (parsedResponse.errors) {
-                            showErrors(parsedResponse.errors);
-                        }
-
-                        $loader.hide();
-                        $submitButton.prop('disabled', false);
+                        updatePageFromResponse(response);
                     });
                 }, 2000);
             } else {
@@ -85,17 +75,53 @@ window.addEventListener('load', function () {
             }
         }
 
-        function removeImage() {
+        /**
+         * Update posts and most used words after from response or show errors
+         *
+         * @param {Object} response
+         */
+        function updatePageFromResponse(response) {
+            let parsedResponse = JSON.parse(response);
+
+            if (parsedResponse.data) {
+                if (parsedResponse.data.post) {
+                    $blogPostsBlock.prepend(parsedResponse.data.post);
+                }
+
+                if (parsedResponse.data.usedWords) {
+                    $usedWordsBlock.html(parsedResponse.data.usedWords);
+                }
+
+                clearForm();
+            } else if (parsedResponse.errors) {
+                showErrors(parsedResponse.errors);
+            }
+
+            $loader.hide();
+            $submitButton.prop('disabled', false);
+        }
+
+        /**
+         * Remove uploaded image
+         */
+        function removeUploadedImage() {
             $removeImage.hide();
             $fileUpload.val('');
             $filePath.text('');
         }
 
+        /**
+         * Clear all inputs in form
+         */
         function clearForm() {
-            removeImage();
+            removeUploadedImage();
             $form.trigger('reset');
         }
 
+        /**
+         * Show errors in errors block
+         * @param errors
+         */
         function showErrors(errors) {
             clearErrors();
             errors.forEach(function (error) {
@@ -103,6 +129,9 @@ window.addEventListener('load', function () {
             });
         }
 
+        /**
+         * Clear errors from errors block
+         */
         function clearErrors() {
             $errorsContainer.html('');
         }
@@ -145,5 +174,5 @@ window.addEventListener('load', function () {
         }
     }
 
-    new AddPostForm('blog-add-post-form');
+    new PostsPage();
 });
